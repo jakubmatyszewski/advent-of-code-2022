@@ -23,3 +23,16 @@ for line in data:
 
 # solution 1
 print("Solution 1: ", count)
+
+count = 0
+for line in data:
+    x_range, y_range = line.split(',')
+    xl, xr = (int(z) for z in x_range.split('-'))
+    yl, yr = (int(z) for z in y_range.split('-'))
+    x = set(range(xl, xr + 1))
+    y = set(range(yl, yr + 1))
+    if yl in x or yr in x or xl in y or xr in y:
+        count += 1
+    
+# solution 2
+print("Solution 2: ", count)
