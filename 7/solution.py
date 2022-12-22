@@ -26,3 +26,6 @@ for line in data:
 
 # solution 1
 print("Solution 1: ", sum(s for s in sizes.values() if s <= 100_000))
+
+# solution 2
+print("Solution 2: ", min(s for s in sizes.values() if (70000000 - sizes["/"] + s) >= 30000000))
