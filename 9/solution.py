@@ -10,41 +10,62 @@ def read_puzzle_input(puzzle_input: str) -> List[str]:
 data = read_puzzle_input('puzzle_input.txt')
 
 directions = {
-    "U": (0, 1),
-    "D": (0, -1),
-    "L": (-1, 0),
-    "R": (1, 0)
+    "U": [0, 1],
+    "D": [0, -1],
+    "L": [-1, 0],
+    "R": [1, 0]
 }
 
+def move_head(dir: str, steps: int):
+    for _ in range(steps):
+        direction = directions[dir]
+        rope[0] = [[a+c, b+d] for [a, b], [c, d] in zip([rope[0]], [direction])][0]
+        move_knot(1, direction)
 
-class Rope:
-    def __init__(self):
-        self.x, self.y = (0, 0)
-        self.tx, self.ty = (0, 0)
-        self.tail_pos = [(0, 0)]
+def move_knot(knot_id: int, direction: List = []):
+    if (abs(rope[knot_id - 1][0] - rope[knot_id][0]) > 1 or  # x diff
+        abs(rope[knot_id - 1][1] - rope[knot_id][1]) > 1):   # y diff
 
-    def move_head(self, dir: str, steps: int):
-        for _ in range(steps):
-            dir_x, dir_y = directions[dir]
-            self.x += dir_x
-            self.y += dir_y
-            self.move_tail(dir)
+        direction = get_direction(rope[knot_id - 1], rope[knot_id])
+        rope[knot_id] = [[a+c, b+d]
+                    for [a, b], [c, d] in zip([rope[knot_id]], [direction])][0]
+        if knot_id == rope_length - 1:
+            tail_pos.append(tuple(rope[knot_id]))
 
-    def move_tail(self, last_direction: str):
-        if abs(self.x - self.tx) > 1 or abs(self.y - self.ty) > 1:
-            self.tx, self.ty = self.x, self.y
-            dir_x, dir_y = (z * -1 for z in directions[last_direction])
-            self.tx += dir_x
-            self.ty += dir_y
-            self.tail_pos.append((self.tx, self.ty))
+        if knot_id < rope_length - 1:
+            move_knot(knot_id + 1, direction)
+
+def get_direction(head, tail):
+    x, y = [[a-c, b-d]
+                    for [a, b], [c, d] in zip([head], [tail])][0]
+    if abs(x) == 2 and not y: # horizontal
+            x = 1 if x > 0 else -1
+    elif abs(y) == 2 and not x: # vertical
+        y = 1 if y > 0 else -1
+    elif (abs(x) == 2 and abs(y) in (1, 2)) or (abs(y) == 2 and abs(x) in (1, 2)):
+        x = 1 if x > 0 else -1
+        y = 1 if y > 0 else -1
+    return [x, y]
 
 
-rope = Rope()
-
+rope_length = 2
+rope = [[0, 0] for _ in range(rope_length)]
+tail_pos = [(0, 0)]
 for line in data:
     dir, steps = line.split()
-    rope.move_head(dir, int(steps))
+    move_head(dir, int(steps))
+
 
 
 # solution 1
-print("Solution 1: ", len(set(rope.tail_pos)))
+print("Solution 1: ", len(set(tail_pos)))
+
+rope_length = 10
+rope = [[0, 0] for _ in range(rope_length)]
+tail_pos = [(0, 0)]
+for line in data:
+    dir, steps = line.split()
+    move_head(dir, int(steps))
+
+# solution 2
+print("Solution 2: ", len(set(tail_pos)))
