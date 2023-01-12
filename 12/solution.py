@@ -1,5 +1,5 @@
 from collections import deque
-from typing import List
+from typing import List, Union
 
 def read_puzzle_input(puzzle_input: str) -> List[str]: 
     with open(puzzle_input, 'r') as f:
@@ -9,10 +9,10 @@ def read_puzzle_input(puzzle_input: str) -> List[str]:
 data = read_puzzle_input('puzzle_input.txt')
 
 
-def solve() -> int:
+def solve(start: Union[str, list]) -> int:
     Q = deque((i, j, 0, 'a') for i in range(len(data))
                              for j in range(len(data[i]))
-                             if data[i][j] == 'S')
+                             if data[i][j] in start)
 
     visited = set((i, j) for i, j, _, _ in Q)
 
@@ -32,4 +32,7 @@ def solve() -> int:
 
 
 # solution 1
-print("Solution 1: ", solve())
+print("Solution 1: ", solve('S'))
+
+# solution 2
+print("Solution 2: ", solve(['S', 'a']))
