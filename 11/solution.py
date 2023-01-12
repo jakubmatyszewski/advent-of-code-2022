@@ -56,13 +56,16 @@ def monkee_inspect(worry: int, operation: str, values: List[int|str]) -> int:
     elif operation == 'mul':
         return functools.reduce(lambda x, y: x * y, values)
 
-def play_round(monkees: list):
+def play_round(monkees: list) -> None:
+    modulo = functools.reduce(lambda x, y: x*y, [monkee['test'] for monkee in monkees])
     for monkee in monkees:
         for item in monkee['items']:
             monkee["busy"] += 1
             operation = monkee['operation'][0]
             values = monkee['operation'][1:]
-            new = monkee_inspect(item, operation, values)//3
+            # new = monkee_inspect(item, operation, values)//3
+            new = monkee_inspect(item, operation, values) % modulo
+
             test_outcome = test_item(new, monkee['test'])
             if test_outcome:
                 monkees[monkee['true']]["items"].append(new)
@@ -72,8 +75,14 @@ def play_round(monkees: list):
 
 monkees = parse_instructions(data)
 
-for _ in range(20):
+# for _ in range(20):
+#     play_round(monkees)
+
+# # solution 1
+# print("Solution 1: ", functools.reduce(lambda x, y: x * y, sorted([monkee['busy'] for monkee in monkees], reverse=True)[:2]))
+
+for i in range(10000):
     play_round(monkees)
 
-# solution 1
-print("Solution 1: ", functools.reduce(lambda x, y: x * y, sorted([monkee['busy'] for monkee in monkees], reverse=True)[:2]))
+# solution 2
+print("Solution 2: ", functools.reduce(lambda x, y: x * y, sorted([monkee['busy'] for monkee in monkees], reverse=True)[:2]))
